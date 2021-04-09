@@ -2,12 +2,9 @@
 ifeq ($(platform),)
 	shellstd = posix
 	platform = unix
-	ifeq ($(OS),Windows_NT)
-		platform = win
-		shellstd = win
-	endif
+	
 	ifeq ($(shell uname -a),)
-		shellstd = posix
+		shellstd = win
 		platform = win
 	else ifneq ($(findstring Darwin,$(shell uname -a)),)
 		shellstd = posix
@@ -15,6 +12,15 @@ ifeq ($(platform),)
 	else ifneq ($(findstring MINGW,$(shell uname -a)),)
 		shellstd = posix
 		platform = win
+	else ifeq ($(SHELL),cmd)
+		platform = win
+		shellstd = win
+	else ifneq ($(findstring MSYS,$(shell uname -a)),)
+		shellstd = posix
+		platform = win
+	else ifeq ($(OS),Windows_NT)
+		platform = win
+		shellstd = win
 	endif
 endif
 
@@ -22,10 +28,12 @@ ifeq ($(shellstd),posix)
 	RM = rm -f
 	MD = mkdir
 	CP = cp -r
+	S = /
 else
 	RM = del /f
 	MD = md
 	CP = cp
+	S =\\
 endif
 
 ifneq ($(platform),win)
