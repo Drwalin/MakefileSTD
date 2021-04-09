@@ -12,7 +12,7 @@ ifeq ($(platform),)
 	else ifneq ($(findstring MINGW,$(shell uname -a)),)
 		shellstd = posix
 		platform = win
-	else ifeq ($(SHELL),cmd)
+	else ifneq ($(findstring cmd,$(SHELL)),)
 		platform = win
 		shellstd = win
 	else ifneq ($(findstring MSYS,$(shell uname -a)),)
