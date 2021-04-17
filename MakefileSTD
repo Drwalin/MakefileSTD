@@ -15,7 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-ifeq ($(platform),)
+ifeq ($(OS),Windows_NT)
+	platform = win
+	shellstd = win
+else
 	shellstd = posix
 	platform = unix
 	
@@ -58,5 +61,40 @@ ifneq ($(platform),win)
 else
 	SHARED_EXT =.dll
 	EXEC_EXT =.exe
+endif
+
+
+ifneq ($(UNAME),)
+	ifeq ($(shell uname -a),)
+		shellstd = win
+		platform = win
+	else ifneq ($(findstring Darwin,$(shell uname -a)),)
+		shellstd = posix
+		platform = osx
+	else ifneq ($(findstring MINGW,$(shell uname -a)),)
+		shellstd = posix
+		platform = win
+	else ifneq ($(findstring cmd,$(SHELL)),)
+		platform = win
+		shellstd = win
+	else ifneq ($(findstring MSYS,$(shell uname -a)),)
+		shellstd = posix
+		platform = win
+	else ifeq ($(OS),Windows_NT)
+		platform = win
+		shellstd = win
+	endif
+	
+	ifeq ($(shellstd),posix)
+		RM = rm -f
+		MD = mkdir
+		CP = cp -r
+		S = /
+	else
+		RM = del /f
+		MD = md
+		CP = cp
+		S =\\
+	endif
 endif
 
